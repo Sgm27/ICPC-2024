@@ -1,86 +1,96 @@
-#include<bits/stdc++.h>
-using namespace std;
-
-typedef long long ll;
-
-#ifdef LOCAL
-#include<debug.h>
-#else
-#define debug(...) 28
-#define write_output(...) 03
-#define eprintf(...) 2003
-#define endl '\n'
+#ifdef DS
+    #include "debug.h"
+#else 
+    #include<bits/stdc++.h>
+    #define deb(...) 
 #endif
-
-// Vi anh chi dam yeu em trong giac mo
-// Noi em thuoc ve anh...
-
+using namespace std;
+#define FOR(i,a,b) for (int i=a;i<=b;i++)
+#define FOD(i,a,b) for (int i=a;i>=b;i--)
+#define ALL(x) x.begin(),x.end()
+#define NALL(x) x.begin()+1,x.end()
+#define TIME "Time elapsed : "<<(double)clock()/1000<<" s"
 #define int long long
+#define vi vector<int>
+#define pii pair<int,int>
+const int MOD=1e9+7,INF=4e18;
+#define maxn 
 
-const int mxN = 1e5 + 5;
-vector<pair<int, int>> adj[mxN];
-bool visited[mxN];
+struct DSU
+{
+    vector<int> r, sz;
+    int n;
+    DSU(int _sz)
+    {k
+        n = _sz;
+        r.resize(_sz + 1);
+        sz.assign(_sz + 1, 1);
+        FOR(i, 1, n)
+            r[i] = i;
+    }
+    int get_root(int u)
+    {
+        if (u == r[u]) return u;
+        return r[u] = get_root(r[u]);
+    }
+    bool join(int u, int v)
+    {
+        u = get_root(u);
+        v = get_root(v);
+        if (u == v)
+            return 0;
+        if (sz[u] < sz[v])
+            swap(u, v);
+        sz[u] += sz[v];
+        sz[v] = 0;
+        return r[v] = u, 1;
+    }
+};
 
-bool ok(int x){
-	while(x){
-		int last = x % 10;
-		x /= 10;
-		if(last != 4 && last != 7) return false;
-	}
-	return true;
+signed main()
+{
+    #ifndef ONLINE_JUDGE
+    freopen("thu.inp","r",stdin);
+    #endif
+    ios_base::sync_with_stdio(0);
+    cin.tie(NULL);
+
+    auto check = [&](int x) -> bool
+    {
+        string s = to_string(x);
+        for (auto i : s)
+            if (i != '4' && i != '7') return false;
+        return true;
+    };
+
+    int n; cin>>n;
+    DSU dsu(n);
+    FOR(i,1,n-1)
+    {
+        int u,v,w; cin>>u>>v>>w;
+        if (check(w)) continue;
+        dsu.join(u,v);
+    }
+
+    auto A3 = [&](int x) -> int
+    {
+        return x * (x - 1) * (x - 2);
+    };
+
+    auto A2 = [&](int x) -> int
+    {
+        return x * (x - 1);
+    };
+
+    int ans = A3(n);
+    vi mark(n+1, 0);
+    FOR(i,1,n)
+        if (mark[dsu.get_root(i)] == 0) 
+        {
+            int sz = dsu.sz[dsu.get_root(i)];
+            ans -= A3(sz);
+            ans -= A2(sz) * (n - sz) * 2;
+            mark[dsu.get_root(i)] = 1;
+        }
+    cout<<ans;
 }
-
-int dfs(int u){
-	visited[u] = true;
-	int res = 1;
-	for(auto p: adj[u]){
-		int v = p.second, w = p.first;
-
-		if(!visited[v] && !ok(w))
-			res += dfs(v);
-	}	
-	return res;
-}
-
-void sieunhan283(){
-	int n;
-	cin >> n;
-
-	for(int i = 0; i < n - 1; ++i){
-		int u, v, w;
-		cin >> u >> v >> w;
-
-		adj[u].push_back({w, v});
-		adj[v].push_back({w, u});
-	}
-
-	int res = n * (n - 1) * (n - 2);
-	for(int i = 1; i <= n; ++i){
-		if(!visited[i]){
-			int sz = dfs(i);
-			res -= sz * (sz - 1) * (n - sz) * 2;
-			res -= sz * (sz - 1) * (sz - 2);
-		}
-	}
-	cout << res << endl;
-}
-
-signed main(){
-
-	ios_base::sync_with_stdio(false);
-	cin.tie(0);
-	
-	int test = 1;
-	//cin >> test;
-
-	for(int itest = 1; itest <= test; ++itest){
-		eprintf("------- Case %d -------\n", itest);
-		sieunhan283();
-		eprintf("----------------------\n");
-	}
-	eprintf("Output:\n");
-	write_output();	
-
-	return 0;
-}
-
