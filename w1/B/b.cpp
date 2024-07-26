@@ -21,7 +21,7 @@ struct DSU
     vector<int> r, sz;
     int n;
     DSU(int _sz)
-    {k
+    {
         n = _sz;
         r.resize(_sz + 1);
         sz.assign(_sz + 1, 1);
